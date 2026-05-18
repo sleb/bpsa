@@ -7,11 +7,7 @@
   },
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -26,6 +22,12 @@
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true
+    "singleProjectMode": true,
+    "auth": {
+      "port": 9099
+    },
+    "hosting": {
+      "port": 5050
+    }
   }
 }

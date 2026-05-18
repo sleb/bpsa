@@ -46,7 +46,13 @@ In **production**, `bun run build.ts` bundles everything from `src/**/*.html` en
 
 ### Env vars
 
-Browser-visible env vars must be prefixed `BUN_PUBLIC_`. Bun loads `.env` automatically — do not use `dotenv`. Firebase config vars live in `.env` as `BUN_PUBLIC_FIREBASE_API_KEY`, `BUN_PUBLIC_FIREBASE_AUTH_DOMAIN`, `BUN_PUBLIC_FIREBASE_PROJECT_ID`, `BUN_PUBLIC_FIREBASE_APP_ID`.
+Browser-visible env vars must be prefixed `BUN_PUBLIC_`. Bun loads `.env` automatically — do not use `dotenv`.
+
+Two env files are in use:
+- `.env` — real Firebase production credentials (gitignored). Used by the production build and CI.
+- `.env.development` — emulator-safe values (gitignored). Bun loads this automatically in dev mode (`bun dev`). Must have `BUN_PUBLIC_FIREBASE_PROJECT_ID=bpsa26-5a752` (real project ID — the emulator namespaces data by project ID) and `BUN_PUBLIC_USE_EMULATOR=true`.
+
+`BUN_PUBLIC_USE_EMULATOR=true` switches `firebase.ts` to use `memoryLocalCache()` (avoiding a `persistentLocalCache` IndexedDB race that silently breaks `connectFirestoreEmulator`) and connects both emulators.
 
 ### UI / styling
 

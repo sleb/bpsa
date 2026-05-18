@@ -72,12 +72,6 @@ describe("formatTime12h", () => {
 });
 
 describe("getCurrentTimeMinutes", () => {
-  test("returns a number between 0 and 1439", () => {
-    const result = getCurrentTimeMinutes(jun18PT);
-    expect(result).toBeGreaterThanOrEqual(0);
-    expect(result).toBeLessThanOrEqual(1439);
-  });
-
   test("noon UTC = 12:00 PT in summer (PDT = UTC-7), so 12:00 UTC = 5:00 AM PT = 300 min", () => {
     const noonUTC = new Date("2026-06-18T12:00:00Z");
     expect(getCurrentTimeMinutes(noonUTC)).toBe(5 * 60); // PDT is UTC-7

@@ -7,7 +7,8 @@ import { LastWriteWinsNote } from "@/components/LastWriteWinsNote";
 import { VersionHistorySheet } from "@/components/VersionHistorySheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { subscribeSchedule, saveDraft, publishDraft, getVersions, restoreVersion } from "@/lib/scheduleService";
+import { subscribeSchedule, saveDraft, publishDraft, getVersions, restoreVersion, entriesEqual } from "@/lib/scheduleService";
+import { toast } from "sonner";
 import { sortEntries, newEntry } from "@/lib/entryUtils";
 import { signOut } from "@/lib/authService";
 import { db, auth } from "@/lib/firebase";
@@ -19,7 +20,6 @@ export function EditorPage() {
   const [selectedDay, setSelectedDay] = useState<DayId>("2026-06-18");
   const [entries, setEntries] = useState<ScheduleEntry[]>([]);
   const [publishedEntries, setPublishedEntries] = useState<ScheduleEntry[]>([]);
-  const [hasDraft, setHasDraft] = useState(false);
   const [loading, setLoading] = useState(true);
   const [addingNew, setAddingNew] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -32,7 +32,6 @@ export function EditorPage() {
     const unsub = subscribeSchedule(db, selectedDay, (schedule) => {
       setEntries(schedule.draftEntries);
       setPublishedEntries(schedule.entries);
-      setHasDraft(schedule.hasDraft);
       setLoading(false);
     });
     return unsub;
@@ -42,26 +41,42 @@ export function EditorPage() {
     getVersions(db, selectedDay).then(setVersions);
   }, [selectedDay]);
 
-  function handleSave(updated: ScheduleEntry) {
+  async function handleSave(updated: ScheduleEntry) {
+    const prev = entries;
     const next = entries.map((e) => (e.id === updated.id ? updated : e));
     setEntries(next);
-    setHasDraft(true);
-    saveDraft(db, selectedDay, next, user!.uid, editorName);
+    try {
+      await saveDraft(db, selectedDay, next, user!.uid, editorName);
+    } catch {
+      setEntries(prev);
+      toast.error("Save failed — check your connection and try again.");
+    }
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
+    const prev = entries;
     const next = entries.filter((e) => e.id !== id);
     setEntries(next);
-    setHasDraft(true);
-    saveDraft(db, selectedDay, next, user!.uid, editorName);
+    try {
+      await saveDraft(db, selectedDay, next, user!.uid, editorName);
+    } catch {
+      setEntries(prev);
+      toast.error("Save failed — check your connection and try again.");
+    }
   }
 
-  function handleAddNew(entry: ScheduleEntry) {
+  async function handleAddNew(entry: ScheduleEntry) {
+    const prev = entries;
     const next = [...entries, entry];
     setEntries(next);
     setAddingNew(false);
-    setHasDraft(true);
-    saveDraft(db, selectedDay, next, user!.uid, editorName);
+    try {
+      await saveDraft(db, selectedDay, next, user!.uid, editorName);
+    } catch {
+      setEntries(prev);
+      setAddingNew(true);
+      toast.error("Save failed — check your connection and try again.");
+    }
   }
 
   async function handlePublish() {
@@ -69,7 +84,7 @@ export function EditorPage() {
     setPublishError(null);
     try {
       await publishDraft(db, selectedDay, user!.uid, editorName);
-      getVersions(db, selectedDay).then(setVersions);
+      getVersions(db, selectedDay).then(setVersions).catch(() => {});
     } catch {
       setPublishError("Publish failed — your draft is still saved. Try again.");
     } finally {
@@ -78,17 +93,27 @@ export function EditorPage() {
   }
 
   async function handleRestoreVersion(versionId: string) {
-    await restoreVersion(db, selectedDay, versionId, user!.uid, editorName);
-    setHasDraft(true);
+    try {
+      await restoreVersion(db, selectedDay, versionId, user!.uid, editorName);
+    } catch {
+      toast.error("Restore failed — check your connection and try again.");
+    }
   }
 
-  function handleRestore(entry: ScheduleEntry) {
+  async function handleRestore(entry: ScheduleEntry) {
+    const prev = entries;
     const next = [...entries, entry];
     setEntries(next);
-    saveDraft(db, selectedDay, next, user!.uid, editorName);
+    try {
+      await saveDraft(db, selectedDay, next, user!.uid, editorName);
+    } catch {
+      setEntries(prev);
+      toast.error("Save failed — check your connection and try again.");
+    }
   }
 
-  const editorName = userDoc?.displayName ?? user?.displayName ?? undefined;
+  const editorName = userDoc?.displayName ?? user?.displayName;
+  const hasDraft = !entriesEqual(entries, publishedEntries);
   const sorted = sortEntries(entries);
   const draftIds = new Set(entries.map((e) => e.id));
   const publishedIds = new Set(publishedEntries.map((e) => e.id));
@@ -130,11 +155,8 @@ export function EditorPage() {
         ) : (
           <>
             <div className="divide-y divide-border mt-2">
-              {[
-                ...sorted.map((e) => ({ entry: e, deleted: false as const })),
-                ...pendingDeletions.map((e) => ({ entry: e, deleted: true as const })),
-              ]
-                .sort((a, b) => a.entry.sortOrder - b.entry.sortOrder)
+              {sortEntries([...sorted, ...pendingDeletions])
+                .map((entry) => ({ entry, deleted: !draftIds.has(entry.id) }))
                 .map(({ entry, deleted }) =>
                   deleted ? (
                     <EntryRow key={entry.id} entry={entry} deleted onRestore={handleRestore} />

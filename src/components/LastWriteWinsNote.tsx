@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "bpsa-lww-dismissed";
 
@@ -20,9 +21,9 @@ export function LastWriteWinsNote() {
       <span className="flex-1">
         Note: if two editors save at the same time, the last save wins. Coordinate with your team.
       </span>
-      <button onClick={dismiss} className="shrink-0 mt-0.5" aria-label="Dismiss">
+      <Button variant="ghost" size="icon" className="shrink-0 h-5 w-5 mt-0.5" onClick={dismiss} aria-label="Dismiss">
         <X className="h-3 w-3" />
-      </button>
+      </Button>
     </div>
   );
 }

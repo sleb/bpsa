@@ -71,7 +71,6 @@ Firebase project: `bpsa26-5a752` (`.firebaserc`).
 schedules/{dayId}               dayId = "2026-06-18" | "2026-06-19" | "2026-06-20"
   entries: ScheduleEntry[]      live (what participants see)
   draftEntries: ScheduleEntry[] editor working copy
-  hasDraft: boolean
   publishedVersion: number
   publishedAt, publishedBy, draftLastEditedAt, draftLastEditedBy
 
@@ -107,7 +106,7 @@ Push to `main` → GitHub Actions (`.github/workflows/firebase-hosting-merge.yml
 ## Key constraints
 
 - **Mobile-first is non-negotiable.** All UI (participant and editor) must be designed and tested at 375px before any desktop styling.
-- **Not yet installed:** React Router v7 and the Firebase SDK. Use `bun add react-router firebase` to add them. Use React Router v7 in **library mode** (`createBrowserRouter` from `react-router-dom`) — not framework mode, since this is a static SPA with no server-side runtime.
+- Use React Router v7 in **library mode** (`createBrowserRouter` from `react-router-dom`) — not framework mode, since this is a static SPA with no server-side runtime.
 - Use the modular Firebase v9+ SDK (tree-shakeable imports): `import { getFirestore } from "firebase/firestore"`. Only import `firebase/auth` and `firebase/firestore`.
 - Enable Firestore offline persistence (`initializeFirestore` with persistence settings) so the schedule works without cell service at camp.
 - Times in schedule entries are stored as plain `"HH:MM"` strings (24h). The `NowIndicator` must compare against Pacific Time (`America/Los_Angeles`) using `Intl.DateTimeFormat`, not the device's local time zone.

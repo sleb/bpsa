@@ -35,6 +35,20 @@ type DeletedProps = {
 
 type Props = ActiveProps | DeletedProps;
 
+function EntryDetails({ entry, deleted }: { entry: ScheduleEntry; deleted?: boolean }) {
+  return (
+    <div className={`flex-1 min-w-0 ${deleted ? "line-through decoration-destructive" : ""}`}>
+      <span className="text-xs font-mono text-muted-foreground">
+        {entry.time ? formatTime12h(entry.time) : "—"}
+      </span>
+      <p className="text-sm font-medium truncate">
+        {entry.activity || <span className={deleted ? "italic" : "text-muted-foreground italic"}>Untitled</span>}
+      </p>
+      <p className="text-xs text-muted-foreground truncate">{entry.location}</p>
+    </div>
+  );
+}
+
 export function EntryRow(props: Props) {
   const [editing, setEditing] = useState(false);
   const { entry } = props;
@@ -53,13 +67,7 @@ export function EntryRow(props: Props) {
   if (props.deleted) {
     return (
       <div className="flex items-start gap-2 py-2 px-1 opacity-50">
-        <div className="flex-1 min-w-0 line-through decoration-destructive">
-          <span className="text-xs font-mono text-muted-foreground">
-            {entry.time ? formatTime12h(entry.time) : "—"}
-          </span>
-          <p className="text-sm font-medium truncate">{entry.activity || <span className="italic">Untitled</span>}</p>
-          <p className="text-xs text-muted-foreground truncate">{entry.location}</p>
-        </div>
+        <EntryDetails entry={entry} deleted />
         <Button
           variant="ghost"
           size="icon"
@@ -75,13 +83,7 @@ export function EntryRow(props: Props) {
 
   return (
     <div className="flex items-start gap-2 py-2 px-1">
-      <div className="flex-1 min-w-0">
-        <span className="text-xs font-mono text-muted-foreground">
-          {entry.time ? formatTime12h(entry.time) : "—"}
-        </span>
-        <p className="text-sm font-medium truncate">{entry.activity || <span className="text-muted-foreground italic">Untitled</span>}</p>
-        <p className="text-xs text-muted-foreground truncate">{entry.location}</p>
-      </div>
+      <EntryDetails entry={entry} />
       <div className="flex gap-1 shrink-0">
         <Button
           variant="ghost"

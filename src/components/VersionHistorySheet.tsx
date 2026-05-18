@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { History, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import { sortEntries } from "@/lib/entryUtils";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -38,8 +39,11 @@ function VersionCard({
 
   async function handleRestore() {
     setRestoring(true);
-    await onRestore(version.id);
-    setRestoring(false);
+    try {
+      await onRestore(version.id);
+    } finally {
+      setRestoring(false);
+    }
   }
 
   return (
@@ -63,22 +67,22 @@ function VersionCard({
         </Button>
       </div>
 
-      <button
-        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-auto px-0 text-xs text-muted-foreground hover:text-foreground hover:bg-transparent gap-1"
         onClick={() => setExpanded((v) => !v)}
       >
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
         {version.entries.length} {version.entries.length === 1 ? "entry" : "entries"}
-      </button>
+      </Button>
 
       {expanded && (
         <ul className="text-xs space-y-1 pl-2 border-l-2 border-muted">
           {version.entries.length === 0 ? (
             <li className="text-muted-foreground italic">Empty schedule</li>
           ) : (
-            version.entries
-              .slice()
-              .sort((a, b) => a.sortOrder - b.sortOrder)
+            sortEntries(version.entries)
               .map((e) => (
                 <li key={e.id} className="text-muted-foreground">
                   {e.time} · {e.activity} · {e.location}

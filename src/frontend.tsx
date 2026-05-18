@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
+import { Toaster } from "@/components/ui/sonner";
 import { router } from "./router";
 import "./index.css";
 
@@ -10,5 +11,6 @@ const elem = document.getElementById("root")!;
 (import.meta.hot.data.root ??= createRoot(elem)).render(
   <StrictMode>
     <RouterProvider router={router} />
+    <Toaster />
   </StrictMode>
 );

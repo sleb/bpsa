@@ -23,8 +23,9 @@ export function useAuthState(): AuthState {
         setState({ user: null, userDoc: null, loading: false });
         return;
       }
-      const userDoc = await resolveUserRole(db, user.uid);
-      setState({ user, userDoc, loading: false });
+      resolveUserRole(db, user.uid)
+        .then((userDoc) => setState({ user, userDoc, loading: false }))
+        .catch(() => setState({ user, userDoc: null, loading: false }));
     });
   }, []);
 

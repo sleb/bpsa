@@ -2,8 +2,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
   collection,
-  updateDoc,
   onSnapshot,
   runTransaction,
   serverTimestamp,
@@ -12,11 +12,16 @@ import {
 } from "firebase/firestore";
 import type { DayId, ScheduleDoc, ScheduleEntry, VersionDoc } from "./types";
 
+function parseEntries(data: Record<string, unknown>, field: string): ScheduleEntry[] {
+  const val = data[field];
+  if (!Array.isArray(val)) throw new Error(`schedules doc missing field: ${field}`);
+  return val as ScheduleEntry[];
+}
+
 function docToSchedule(data: Record<string, unknown>): ScheduleDoc {
   return {
-    entries: (data["entries"] as ScheduleEntry[]) ?? [],
-    draftEntries: (data["draftEntries"] as ScheduleEntry[]) ?? [],
-    hasDraft: (data["hasDraft"] as boolean) ?? false,
+    entries: parseEntries(data, "entries"),
+    draftEntries: parseEntries(data, "draftEntries"),
     publishedVersion: (data["publishedVersion"] as number) ?? 0,
     publishedAt: data["publishedAt"]
       ? ((data["publishedAt"] as { toDate(): Date }).toDate())
@@ -41,7 +46,6 @@ export async function getSchedule(
 const EMPTY_SCHEDULE: ScheduleDoc = {
   entries: [],
   draftEntries: [],
-  hasDraft: false,
   publishedVersion: 0,
   publishedAt: null,
   publishedBy: null,
@@ -59,7 +63,7 @@ export function subscribeSchedule(
   });
 }
 
-function entriesEqual(a: ScheduleEntry[], b: ScheduleEntry[]): boolean {
+export function entriesEqual(a: ScheduleEntry[], b: ScheduleEntry[]): boolean {
   if (a.length !== b.length) return false;
   const sortById = (arr: ScheduleEntry[]) => [...arr].sort((x, y) => x.id.localeCompare(y.id));
   const sa = sortById(a);
@@ -68,7 +72,8 @@ function entriesEqual(a: ScheduleEntry[], b: ScheduleEntry[]): boolean {
     entry.id === sb[i]!.id &&
     entry.time === sb[i]!.time &&
     entry.activity === sb[i]!.activity &&
-    entry.location === sb[i]!.location
+    entry.location === sb[i]!.location &&
+    entry.sortOrder === sb[i]!.sortOrder
   );
 }
 
@@ -79,20 +84,12 @@ export async function saveDraft(
   uid: string,
   displayName: string | undefined
 ): Promise<void> {
-  const ref = doc(db, "schedules", dayId);
-  await runTransaction(db, async (tx) => {
-    const snap = await tx.get(ref);
-    const published = snap.exists()
-      ? ((snap.data() as Record<string, unknown>)["entries"] as ScheduleEntry[]) ?? []
-      : [];
-    tx.set(ref, {
-      draftEntries: entries,
-      hasDraft: !entriesEqual(entries, published),
-      draftLastEditedAt: serverTimestamp(),
-      draftLastEditedBy: uid,
-      draftLastEditedByName: displayName ?? null,
-    }, { merge: true });
-  });
+  await setDoc(doc(db, "schedules", dayId), {
+    draftEntries: entries,
+    draftLastEditedAt: serverTimestamp(),
+    draftLastEditedBy: uid,
+    draftLastEditedByName: displayName ?? null,
+  }, { merge: true });
 }
 
 function versionSlotId(version: number): string {
@@ -115,14 +112,15 @@ export async function publishDraft(
     const draft = (data["draftEntries"] as ScheduleEntry[]) ?? [];
     const version = ((data["publishedVersion"] as number) ?? 0) + 1;
     tx.set(ref, {
-      ...data,
       entries: draft,
       draftEntries: draft,
-      hasDraft: false,
       publishedVersion: version,
       publishedAt: serverTimestamp(),
       publishedBy: uid,
       publishedByName: displayName ?? null,
+      draftLastEditedAt: data["draftLastEditedAt"] ?? null,
+      draftLastEditedBy: data["draftLastEditedBy"] ?? null,
+      draftLastEditedByName: data["draftLastEditedByName"] ?? null,
     });
     const versionRef = doc(db, "schedules", dayId, "versions", versionSlotId(version));
     tx.set(versionRef, {

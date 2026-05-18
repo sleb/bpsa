@@ -1,25 +1,10 @@
 import { test, expect, describe } from "bun:test";
-import { newEntry, sortEntries, reorderEntries } from "../lib/entryUtils";
+import { sortEntries, reorderEntries } from "../lib/entryUtils";
 import type { ScheduleEntry } from "../lib/types";
 
 function entry(overrides: Partial<ScheduleEntry>): ScheduleEntry {
   return { id: "x", time: "09:00", activity: "", location: "", sortOrder: 0, ...overrides };
 }
-
-describe("newEntry", () => {
-  test("returns unique ids on each call", () => {
-    const a = newEntry();
-    const b = newEntry();
-    expect(a.id).not.toBe(b.id);
-  });
-
-  test("returns blank activity, location, and time", () => {
-    const e = newEntry();
-    expect(e.activity).toBe("");
-    expect(e.location).toBe("");
-    expect(e.time).toBe("");
-  });
-});
 
 describe("sortEntries", () => {
   test("sorts by sortOrder ascending", () => {

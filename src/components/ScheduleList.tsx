@@ -1,6 +1,7 @@
 import { ScheduleEntry } from "@/components/ScheduleEntry";
-import { NowBadge, useActiveEntryId } from "@/components/NowIndicator";
+import { useActiveEntryId } from "@/hooks/useActiveEntryId";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sortEntries } from "@/lib/entryUtils";
 import type { ScheduleEntry as Entry } from "@/lib/types";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 
 export function ScheduleList({ entries, loading }: Props) {
   const activeId = useActiveEntryId(entries);
-  const sorted = [...entries].sort((a, b) => a.sortOrder - b.sortOrder);
+  const sorted = sortEntries(entries);
 
   if (loading) {
     return (
@@ -33,10 +34,7 @@ export function ScheduleList({ entries, loading }: Props) {
   return (
     <div className="divide-y divide-border">
       {sorted.map((entry) => (
-        <div key={entry.id}>
-          {entry.id === activeId && <NowBadge />}
-          <ScheduleEntry entry={entry} isActive={entry.id === activeId} />
-        </div>
+        <ScheduleEntry key={entry.id} entry={entry} isActive={entry.id === activeId} />
       ))}
     </div>
   );

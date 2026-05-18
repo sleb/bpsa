@@ -1,26 +1,16 @@
 import { test, expect, beforeAll, afterAll, beforeEach, describe } from "bun:test";
 import {
-  initializeTestEnvironment,
   assertSucceeds,
   assertFails,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import { readFileSync } from "fs";
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs } from "firebase/firestore";
-
-const PROJECT_ID = "bpsa26-5a752";
+import { createTestEnv } from "./helpers/testEnv";
 
 let testEnv: RulesTestEnvironment;
 
 beforeAll(async () => {
-  testEnv = await initializeTestEnvironment({
-    projectId: PROJECT_ID,
-    firestore: {
-      rules: readFileSync("firestore.rules", "utf8"),
-      host: "localhost",
-      port: 8080,
-    },
-  });
+  testEnv = await createTestEnv();
 });
 
 afterAll(async () => {
@@ -54,7 +44,6 @@ async function seedSchedule(dayId: string) {
     await setDoc(doc(ctx.firestore(), "schedules", dayId), {
       entries: [],
       draftEntries: [],
-      hasDraft: false,
       publishedVersion: 0,
       publishedAt: null,
       publishedBy: null,
@@ -75,14 +64,14 @@ describe("schedules collection", () => {
   test("unauthenticated user cannot write schedule", async () => {
     const ctx = testEnv.unauthenticatedContext();
     await assertFails(
-      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { hasDraft: true })
+      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { draftEntries: [] })
     );
   });
 
   test("authenticated user with no users/ doc cannot write schedule", async () => {
     const ctx = testEnv.authenticatedContext("unknown-uid");
     await assertFails(
-      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { hasDraft: true })
+      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { draftEntries: [] })
     );
   });
 
@@ -90,7 +79,7 @@ describe("schedules collection", () => {
     await seedUser("inactive-editor", "editor", false);
     const ctx = testEnv.authenticatedContext("inactive-editor");
     await assertFails(
-      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { hasDraft: true })
+      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { draftEntries: [] })
     );
   });
 
@@ -98,7 +87,7 @@ describe("schedules collection", () => {
     await seedUser("active-editor", "editor", true);
     const ctx = testEnv.authenticatedContext("active-editor");
     await assertSucceeds(
-      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { hasDraft: true })
+      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { draftEntries: [] })
     );
   });
 
@@ -106,7 +95,7 @@ describe("schedules collection", () => {
     await seedUser("admin-user", "admin", true);
     const ctx = testEnv.authenticatedContext("admin-user");
     await assertSucceeds(
-      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { hasDraft: true })
+      updateDoc(doc(ctx.firestore(), "schedules", "2026-06-18"), { draftEntries: [] })
     );
   });
 });

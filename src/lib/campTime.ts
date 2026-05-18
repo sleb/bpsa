@@ -1,4 +1,5 @@
 import { DAY_IDS, type DayId } from "./types";
+import type { ScheduleEntry } from "./types";
 
 const TZ = "America/Los_Angeles";
 
@@ -26,6 +27,16 @@ export function getCurrentTimeMinutes(now: Date = new Date()): number {
 export function parseTimeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h! * 60 + m!;
+}
+
+export function findActiveIndex(sorted: ScheduleEntry[], nowMinutes: number): number {
+  let active = -1;
+  for (let i = 0; i < sorted.length; i++) {
+    if (parseTimeToMinutes(sorted[i]!.time) <= nowMinutes) {
+      active = i;
+    }
+  }
+  return active;
 }
 
 export function formatTime12h(time: string): string {

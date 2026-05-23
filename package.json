@@ -33,6 +33,7 @@
     "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "firebase-tools": "^15.18.0",
     "tailwindcss": "^4.1.11"
   }
 }

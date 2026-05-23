@@ -7,6 +7,7 @@ const REQUIRED_ENV_VARS = [
   "BUN_PUBLIC_FIREBASE_AUTH_DOMAIN",
   "BUN_PUBLIC_FIREBASE_PROJECT_ID",
   "BUN_PUBLIC_FIREBASE_APP_ID",
+  "BUN_PUBLIC_USE_EMULATOR",
 ];
 
 const outdir = path.join(process.cwd(), "dist");

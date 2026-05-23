@@ -9,17 +9,6 @@ import {
 
 const useEmulator = process.env.BUN_PUBLIC_USE_EMULATOR === "true";
 
-const requiredVars = [
-  "BUN_PUBLIC_FIREBASE_API_KEY",
-  "BUN_PUBLIC_FIREBASE_AUTH_DOMAIN",
-  "BUN_PUBLIC_FIREBASE_PROJECT_ID",
-  "BUN_PUBLIC_FIREBASE_APP_ID",
-] as const;
-
-for (const key of requiredVars) {
-  if (!process.env[key]) throw new Error(`Missing required env var: ${key}`);
-}
-
 const app = initializeApp({
   apiKey: process.env.BUN_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.BUN_PUBLIC_FIREBASE_AUTH_DOMAIN,

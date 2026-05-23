@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun run build
+      - run: bun install && bun run test && bun run build
         env:
           BUN_PUBLIC_FIREBASE_API_KEY: ${{ secrets.BUN_PUBLIC_FIREBASE_API_KEY }}
           BUN_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.BUN_PUBLIC_FIREBASE_AUTH_DOMAIN }}

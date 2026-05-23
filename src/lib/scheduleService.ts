@@ -14,8 +14,7 @@ import type { DayId, ScheduleDoc, ScheduleEntry, VersionDoc } from "./types";
 
 function parseEntries(data: Record<string, unknown>, field: string): ScheduleEntry[] {
   const val = data[field];
-  if (!Array.isArray(val)) throw new Error(`schedules doc missing field: ${field}`);
-  return val as ScheduleEntry[];
+  return Array.isArray(val) ? (val as ScheduleEntry[]) : [];
 }
 
 function docToSchedule(data: Record<string, unknown>): ScheduleDoc {

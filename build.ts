@@ -10,38 +10,43 @@ const REQUIRED_ENV_VARS = [
   "BUN_PUBLIC_USE_EMULATOR",
 ];
 
-const outdir = path.join(process.cwd(), "dist");
-await rm(outdir, { recursive: true, force: true });
+export const build = async (): Promise<Bun.BuildOutput> => {
+  if (process.env.NODE_ENV !== "production") {
+    throw new Error("NODE_ENV must be set to 'production'");
+  }
 
-const entrypoints = [...new Bun.Glob("src/**/*.html").scanSync()];
+  REQUIRED_ENV_VARS.forEach((varName) => {
+    if (!process.env[varName]) {
+      throw new Error(`Required environment variable ${varName} is not set`);
+    }
+  });
 
-const die = (message: string) => {
-  console.error(message);
-  process.exit(1);
+  const outdir = path.join(process.cwd(), "dist");
+  await rm(outdir, { recursive: true, force: true });
+
+  const entrypoints = [...new Bun.Glob("src/**/*.html").scanSync()];
+
+  return Bun.build({
+    entrypoints,
+    outdir,
+    plugins: [tailwind],
+    minify: true,
+    target: "browser",
+    sourcemap: "linked",
+    env: "inline",
+  });
 };
 
-if (process.env.NODE_ENV !== "production") {
-  die("NODE_ENV must be set to 'production'");
-}
+const main = async () => {
+  const result = await build();
 
-REQUIRED_ENV_VARS.forEach((varName) => {
-  if (!process.env[varName]) {
-    die(`Required environment variable ${varName} is not set`);
+  for (const output of result.outputs) {
+    console.log(
+      ` ${path.relative(process.cwd(), output.path)}  ${(output.size / 1024).toFixed(1)} KB`,
+    );
   }
-});
+};
 
-const result = await Bun.build({
-  entrypoints,
-  outdir,
-  plugins: [tailwind],
-  minify: true,
-  target: "browser",
-  sourcemap: "linked",
-  env: "inline",
-});
-
-for (const output of result.outputs) {
-  console.log(
-    ` ${path.relative(process.cwd(), output.path)}  ${(output.size / 1024).toFixed(1)} KB`,
-  );
+if (import.meta.main) {
+  await main();
 }

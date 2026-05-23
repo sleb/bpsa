@@ -7,7 +7,7 @@
     "dev": "bun --hot src/index.ts",
     "test": "firebase emulators:exec 'bun test'",
     "build": "NODE_ENV=production bun run build.ts",
-    "deploy": "bun test && bun run build && firebase deploy"
+    "deploy": "bun run test && bun run build && firebase deploy"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

@@ -17,7 +17,7 @@ jobs:
           distribution: temurin
           java-version: "25"
       - run: bun install
-      - run: bun test
+      - run: bun run test
       - run: bun run build
         env:
           BUN_PUBLIC_FIREBASE_API_KEY: ${{ secrets.BUN_PUBLIC_FIREBASE_API_KEY }}

@@ -1,0 +1,7 @@
+---
+import { getTodayCampDay } from '@/lib/campTime'
+
+const today = getTodayCampDay()
+const dest = today ? `/schedule/${today}` : '/schedule/2026-06-18'
+return Astro.redirect(dest)
+---

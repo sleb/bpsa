@@ -1,10 +1,10 @@
-import { test, expect, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
-  getTodayCampDay,
-  getRedirectDay,
-  parseTimeToMinutes,
   formatTime12h,
   getCurrentTimeMinutes,
+  getRedirectDay,
+  getTodayCampDay,
+  parseTimeToMinutes,
 } from "../lib/campTime";
 
 // June 18 2026 noon Pacific = June 18 2026 19:00 UTC

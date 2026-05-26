@@ -1,12 +1,12 @@
 ---
-import type { SanityScheduleDay } from '@/lib/sanity'
-import { formatTime12h } from '@/lib/campTime'
+import { formatTime12h } from "@/lib/campTime";
+import type { SanityScheduleDay } from "@/lib/sanity";
 
 interface Props {
-  days: SanityScheduleDay[]
+  days: SanityScheduleDay[];
 }
 
-const { days } = Astro.props
+const { days } = Astro.props;
 ---
 
 <div class="min-h-screen bg-background text-foreground">

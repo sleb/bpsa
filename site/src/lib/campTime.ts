@@ -4,7 +4,10 @@ const DAY_IDS = ["2026-06-18", "2026-06-19", "2026-06-20"] as const;
 type DayId = (typeof DAY_IDS)[number];
 
 function toISODate(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", { timeZone: TZ, dateStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    dateStyle: "short",
+  }).format(date);
 }
 
 export function getTodayCampDay(now: Date = new Date()): DayId | null {
@@ -19,7 +22,9 @@ export function getCurrentTimeMinutes(now: Date = new Date()): number {
     minute: "numeric",
     hour12: false,
   }).formatToParts(now);
+  // biome-ignore lint/style/noNonNullAssertion: Intl.formatToParts always includes hour and minute
   const h = parseInt(parts.find((p) => p.type === "hour")!.value, 10);
+  // biome-ignore lint/style/noNonNullAssertion: Intl.formatToParts always includes hour and minute
   const m = parseInt(parts.find((p) => p.type === "minute")!.value, 10);
   return h * 60 + m;
 }
@@ -29,7 +34,7 @@ export function parseTimeToMinutes(time: string): number {
 }
 
 export function getRedirectDay(now: Date = new Date()): DayId {
-  return getTodayCampDay(now) ?? DAY_IDS[0]
+  return getTodayCampDay(now) ?? DAY_IDS[0];
 }
 
 export function formatTime12h(time: string): string {

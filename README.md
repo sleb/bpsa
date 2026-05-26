@@ -19,6 +19,12 @@ bun run preview  # preview production build
 bun studio       # Sanity Studio at http://localhost:3333
 ```
 
+From `site/`:
+
+```bash
+bun test         # run all tests
+```
+
 ## Content
 
 Schedule content lives in Sanity Studio. Visit the deployed Studio at [bpsa26.sanity.studio](https://bpsa26.sanity.studio).
@@ -29,15 +35,15 @@ Schedule content lives in Sanity Studio. Visit the deployed Studio at [bpsa26.sa
 bpsa/
 ├── site/                        # Astro project (public-facing site)
 │   ├── src/
-│   │   ├── pages/               # Astro routing
-│   │   │   ├── index.astro      # redirects to current camp day
-│   │   │   └── schedule/[date].astro
+│   │   ├── pages/
+│   │   │   └── index.astro      # fetches all days, renders Schedule
 │   │   ├── layouts/Layout.astro
-│   │   └── components/
-│   │       └── ScheduleDay.astro  # tab nav + entry list + NowIndicator
-│   └── lib/
-│       ├── sanity.ts            # Sanity client + GROQ queries
-│       └── campTime.ts          # Pacific Time utilities
+│   │   ├── components/
+│   │   │   └── Schedule.astro   # tab nav + all days' entries + NowIndicator
+│   │   └── lib/
+│   │       ├── sanity.ts        # Sanity client + GROQ queries
+│   │       └── campTime.ts      # Pacific Time utilities
+│   └── styles/globals.css       # Tailwind v4 + CSS vars
 └── studio/                      # Sanity Studio (separate sub-project)
     └── schemaTypes/
         └── scheduleDay.ts       # content schema
@@ -45,7 +51,7 @@ bpsa/
 
 Astro generates a fully static site at build time — all schedule data is fetched from Sanity via GROQ during `astro build`. No server runtime; `site/dist/` is pure static HTML/CSS/JS.
 
-The NowIndicator in `ScheduleDay.astro` runs on the client: a vanilla `<script>` reads Pacific Time via `Intl.DateTimeFormat`, finds the last entry whose time ≤ now, and highlights it. Ticks every 60 seconds.
+All three days are rendered as static HTML at build time. A vanilla `<script>` in `Schedule.astro` runs on the client: it shows the correct day on load (defaulting to the current camp day), handles tab switching, and highlights the active schedule entry by reading Pacific Time via `Intl.DateTimeFormat`. Ticks every 60 seconds.
 
 Sanity project ID: `ucdyt6y8`, dataset: `production`. Studio is deployed at [bpsa26.sanity.studio](https://bpsa26.sanity.studio).
 

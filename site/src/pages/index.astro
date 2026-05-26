@@ -1,9 +1,9 @@
 ---
-import Layout from '@/layouts/Layout.astro'
-import Schedule from '@/components/Schedule.astro'
-import { getAllScheduleDays } from '@/lib/sanity'
+import Schedule from "@/components/Schedule.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllScheduleDays } from "@/lib/sanity";
 
-const days = await getAllScheduleDays()
+const days = await getAllScheduleDays();
 ---
 
 <Layout title="BP Youth Summer Adventure 2026">

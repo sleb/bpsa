@@ -1,10 +1,14 @@
 {
   "name": "bpsa26",
   "private": true,
+  "workspaces": [
+    "site",
+    "studio"
+  ],
   "scripts": {
-    "dev": "bun --cwd site dev",
-    "build": "bun --cwd site run build",
-    "preview": "bun --cwd site run preview",
-    "studio": "bun --cwd studio dev"
+    "dev": "bun --filter @bpsa/site dev",
+    "build": "bun --workspaces run build",
+    "preview": "bun --filter @bpsa/site preview",
+    "studio": "bun --filter @bpsa/studio dev"
   }
 }

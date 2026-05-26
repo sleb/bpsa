@@ -39,6 +39,10 @@ export function findActiveIndex(sorted: { time: string }[], nowMinutes: number):
   return active;
 }
 
+export function getRedirectDay(now: Date = new Date()): DayId {
+  return getTodayCampDay(now) ?? DAY_IDS[0]
+}
+
 export function formatTime12h(time: string): string {
   const [h, m] = time.split(":").map(Number);
   const period = h! >= 12 ? "PM" : "AM";

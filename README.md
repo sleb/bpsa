@@ -23,6 +23,32 @@ bun studio       # Sanity Studio at http://localhost:3333
 
 Schedule content lives in Sanity Studio. Visit the deployed Studio at [bpsa26.sanity.studio](https://bpsa26.sanity.studio).
 
+## Architecture
+
+```
+bpsa/
+├── site/                        # Astro project (public-facing site)
+│   ├── src/
+│   │   ├── pages/               # Astro routing
+│   │   │   ├── index.astro      # redirects to current camp day
+│   │   │   └── schedule/[date].astro
+│   │   ├── layouts/Layout.astro
+│   │   └── components/
+│   │       └── ScheduleDay.astro  # tab nav + entry list + NowIndicator
+│   └── lib/
+│       ├── sanity.ts            # Sanity client + GROQ queries
+│       └── campTime.ts          # Pacific Time utilities
+└── studio/                      # Sanity Studio (separate sub-project)
+    └── schemaTypes/
+        └── scheduleDay.ts       # content schema
+```
+
+Astro generates a fully static site at build time — all schedule data is fetched from Sanity via GROQ during `astro build`. No server runtime; `site/dist/` is pure static HTML/CSS/JS.
+
+The NowIndicator in `ScheduleDay.astro` runs on the client: a vanilla `<script>` reads Pacific Time via `Intl.DateTimeFormat`, finds the last entry whose time ≤ now, and highlights it. Ticks every 60 seconds.
+
+Sanity project ID: `ucdyt6y8`, dataset: `production`. Studio is deployed at [bpsa26.sanity.studio](https://bpsa26.sanity.studio).
+
 ## Deployment
 
-Push to `main` deploys to Vercel automatically via GitHub Actions.
+Push to `main` deploys to Vercel automatically via Vercel's GitHub integration.

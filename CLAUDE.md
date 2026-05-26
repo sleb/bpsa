@@ -43,11 +43,10 @@ bpsa/
 ├── site/                        # Astro project (public-facing site)
 │   ├── src/
 │   │   ├── pages/               # Astro routing
-│   │   │   ├── index.astro      # redirects to current camp day
-│   │   │   └── schedule/[date].astro
+│   │   │   └── index.astro      # fetches all days, renders Schedule
 │   │   ├── layouts/Layout.astro # HTML shell
 │   │   ├── components/
-│   │   │   └── ScheduleDay.astro  # tab nav + entry list + NowIndicator
+│   │   │   └── Schedule.astro   # tab nav + all days' entries + NowIndicator
 │   │   └── lib/
 │   │       ├── sanity.ts        # Sanity client + GROQ queries
 │   │       └── campTime.ts      # Pacific Time utilities
@@ -76,7 +75,7 @@ Astro generates a fully static site at build time. All schedule data is fetched 
 
 ### NowIndicator
 
-`ScheduleDay.astro` renders the full schedule as static HTML at build time. A vanilla `<script>` block runs on the client to highlight the current activity: reads Pacific Time via `Intl.DateTimeFormat`, finds the last entry whose time ≤ now, adds/removes Tailwind classes. Ticks every 60 seconds.
+`Schedule.astro` renders all three days as static HTML at build time. A vanilla `<script>` block runs on the client: on load it calls `getRedirectDay()` to show the correct day and activate the right tab; tab clicks switch days in-place without navigation. The NowIndicator highlights the current activity by reading Pacific Time, finding the last entry whose time ≤ now, and adding/removing Tailwind classes. Ticks every 60 seconds.
 
 ### Path aliases
 

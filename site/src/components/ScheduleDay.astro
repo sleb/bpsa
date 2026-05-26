@@ -1,0 +1,14 @@
+---
+import ScheduleEntry from "@/components/ScheduleEntry.astro";
+import type { SanityScheduleDay } from "@/lib/sanity";
+
+interface Props {
+  day: SanityScheduleDay;
+}
+
+const { day } = Astro.props;
+---
+
+<ul data-day-content={day.date} class="space-y-1" hidden>
+  {(day.entries ?? []).map((entry) => <ScheduleEntry entry={entry} />)}
+</ul>

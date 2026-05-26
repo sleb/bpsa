@@ -9,6 +9,11 @@
     "dev": "bun --filter @bpsa/site dev",
     "build": "bun --workspaces run build",
     "preview": "bun --filter @bpsa/site preview",
-    "studio": "bun --filter @bpsa/studio dev"
+    "studio": "bun --filter @bpsa/studio dev",
+    "check": "biome check --write",
+    "format": "biome format --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15"
   }
 }

@@ -1,0 +1,31 @@
+---
+import { formatTime12h } from "@/lib/campTime";
+import type { SanityEntry } from "@/lib/sanity";
+
+interface Props {
+  entry: SanityEntry;
+}
+
+const { entry } = Astro.props;
+---
+
+<li
+  data-time={entry.time}
+  class="flex gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/50"
+>
+  <span
+    class="entry-dot mt-0.5 h-2 w-2 shrink-0 rounded-full bg-primary invisible"
+    aria-hidden="true"
+  ></span>
+  <div class="min-w-0">
+    <div class="flex items-baseline gap-2">
+      <span class="shrink-0 text-sm font-mono text-muted-foreground">
+        {formatTime12h(entry.time)}
+      </span>
+      <span class="font-medium">{entry.activity}</span>
+    </div>
+    {entry.location && (
+      <p class="mt-0.5 text-sm text-muted-foreground">{entry.location}</p>
+    )}
+  </div>
+</li>

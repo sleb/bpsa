@@ -3,11 +3,16 @@
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true,
-    "root": ".."
+    "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist", "!!.astro"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/node_modules",
+      "!!site/.astro",
+      "!!.claude"
+    ]
   },
   "formatter": {
     "enabled": true,

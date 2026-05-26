@@ -1,3 +1,3 @@
-import {scheduleDay} from './scheduleDay'
+import { scheduleDay } from "./scheduleDay";
 
-export const schemaTypes = [scheduleDay]
+export const schemaTypes = [scheduleDay];

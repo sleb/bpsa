@@ -1,5 +1,5 @@
 ---
-import { formatTime12h } from "@/lib/campTime";
+import ScheduleDay from "@/components/ScheduleDay.astro";
 import type { SanityScheduleDay } from "@/lib/sanity";
 
 interface Props {
@@ -27,97 +27,89 @@ const { days } = Astro.props;
   </header>
 
   <main class="mx-auto max-w-lg px-4 py-4">
-    {days.map((d) => (
-      <ul data-day-content={d.date} class="space-y-1" hidden>
-        {(d.entries ?? []).map((entry) => (
-          <li
-            data-time={entry.time}
-            class="flex gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/50"
-          >
-            <span class="entry-dot mt-0.5 h-2 w-2 shrink-0 rounded-full bg-primary invisible" aria-hidden="true"></span>
-            <div class="min-w-0">
-              <div class="flex items-baseline gap-2">
-                <span class="shrink-0 text-sm font-mono text-muted-foreground">
-                  {formatTime12h(entry.time)}
-                </span>
-                <span class="font-medium">{entry.activity}</span>
-              </div>
-              {entry.location && (
-                <p class="mt-0.5 text-sm text-muted-foreground">{entry.location}</p>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    ))}
+    {days.map((d) => <ScheduleDay day={d} />)}
   </main>
 </div>
 
 <script>
   import {
+    getCurrentTimeMinutes,
     getRedirectDay,
     getTodayCampDay,
-    getCurrentTimeMinutes,
     parseTimeToMinutes,
-  } from '@/lib/campTime'
+  } from "@/lib/campTime";
 
-  const ACTIVE_TAB = ['bg-primary', 'text-primary-foreground']
-  const INACTIVE_TAB = ['text-muted-foreground', 'hover:bg-muted']
+  const ACTIVE_TAB = ["bg-primary", "text-primary-foreground"];
+  const INACTIVE_TAB = ["text-muted-foreground", "hover:bg-muted"];
 
   function updateNowIndicator(date: string): void {
-    const list = document.querySelector<HTMLElement>(`[data-day-content="${date}"]`)
-    if (!list) return
-    const rows = list.querySelectorAll<HTMLElement>('li[data-time]')
+    const list = document.querySelector<HTMLElement>(
+      `[data-day-content="${date}"]`,
+    );
+    if (!list) return;
+    const rows = list.querySelectorAll<HTMLElement>("li[data-time]");
 
     for (const row of rows) {
-      row.classList.remove('bg-primary/10', 'ring-1', 'ring-primary')
-      row.classList.add('hover:bg-muted/50')
-      row.querySelector('.entry-dot')?.classList.add('invisible')
+      row.classList.remove("bg-primary/10", "ring-1", "ring-primary");
+      row.classList.add("hover:bg-muted/50");
+      row.querySelector(".entry-dot")?.classList.add("invisible");
     }
 
-    if (date !== getTodayCampDay()) return
+    if (date !== getTodayCampDay()) return;
 
-    const now = getCurrentTimeMinutes()
-    let activeRow: HTMLElement | null = null
+    const now = getCurrentTimeMinutes();
+    let activeRow: HTMLElement | null = null;
     for (const row of rows) {
-      if (parseTimeToMinutes(row.dataset.time!) <= now) activeRow = row
+      // biome-ignore lint/style/noNonNullAssertion: li[data-time] selector guarantees data-time is present
+      if (parseTimeToMinutes(row.dataset.time!) <= now) activeRow = row;
     }
 
     if (activeRow) {
-      activeRow.classList.add('bg-primary/10', 'ring-1', 'ring-primary')
-      activeRow.classList.remove('hover:bg-muted/50')
-      activeRow.querySelector('.entry-dot')?.classList.remove('invisible')
+      activeRow.classList.add("bg-primary/10", "ring-1", "ring-primary");
+      activeRow.classList.remove("hover:bg-muted/50");
+      activeRow.querySelector(".entry-dot")?.classList.remove("invisible");
     }
   }
 
   function showDay(date: string): void {
-    document.querySelectorAll<HTMLElement>('[data-day-content]').forEach((el) => {
-      el.hidden = true
-    })
-    document.querySelectorAll<HTMLButtonElement>('[data-day-tab]').forEach((btn) => {
-      btn.classList.remove(...ACTIVE_TAB)
-      btn.classList.add(...INACTIVE_TAB)
-    })
+    document.querySelectorAll<HTMLElement>("[data-day-content]").forEach((el) => {
+      el.hidden = true;
+    });
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-day-tab]")
+      .forEach((btn) => {
+        btn.classList.remove(...ACTIVE_TAB);
+        btn.classList.add(...INACTIVE_TAB);
+      });
 
-    const content = document.querySelector<HTMLElement>(`[data-day-content="${date}"]`)
-    const tab = document.querySelector<HTMLButtonElement>(`[data-day-tab="${date}"]`)
-    if (content) content.hidden = false
+    const content = document.querySelector<HTMLElement>(
+      `[data-day-content="${date}"]`,
+    );
+    const tab = document.querySelector<HTMLButtonElement>(
+      `[data-day-tab="${date}"]`,
+    );
+    if (content) content.hidden = false;
     if (tab) {
-      tab.classList.add(...ACTIVE_TAB)
-      tab.classList.remove(...INACTIVE_TAB)
+      tab.classList.add(...ACTIVE_TAB);
+      tab.classList.remove(...INACTIVE_TAB);
     }
 
-    updateNowIndicator(date)
+    updateNowIndicator(date);
   }
 
-  document.querySelectorAll<HTMLButtonElement>('[data-day-tab]').forEach((btn) => {
-    btn.addEventListener('click', () => showDay(btn.dataset.dayTab!))
-  })
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-day-tab]")
+    .forEach((btn) => {
+      // biome-ignore lint/style/noNonNullAssertion: [data-day-tab] selector guarantees the attribute is present
+      btn.addEventListener("click", () => showDay(btn.dataset.dayTab!));
+    });
 
-  showDay(getRedirectDay())
+  showDay(getRedirectDay());
 
   setInterval(() => {
-    const visible = document.querySelector<HTMLElement>('[data-day-content]:not([hidden])')
-    if (visible?.dataset.dayContent) updateNowIndicator(visible.dataset.dayContent)
-  }, 60_000)
+    const visible = document.querySelector<HTMLElement>(
+      "[data-day-content]:not([hidden])",
+    );
+    if (visible?.dataset.dayContent) updateNowIndicator(visible.dataset.dayContent);
+  }, 60_000);
 </script>

@@ -4,12 +4,12 @@ const DAY_IDS = ["2026-06-18", "2026-06-19", "2026-06-20"] as const;
 type DayId = (typeof DAY_IDS)[number];
 
 function toISODate(date: Date): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, dateStyle: "short" }).format(date);
+  return new Intl.DateTimeFormat("en-US", { timeZone: TZ, dateStyle: "short" }).format(date);
 }
 
 export function getTodayCampDay(now: Date = new Date()): DayId | null {
   const today = toISODate(now);
-  return (DAY_IDS as readonly string[]).includes(today) ? (today as DayId) : null;
+  return DAY_IDS.find((d) => d === today) ?? null;
 }
 
 export function getCurrentTimeMinutes(now: Date = new Date()): number {
@@ -25,18 +25,7 @@ export function getCurrentTimeMinutes(now: Date = new Date()): number {
 }
 
 export function parseTimeToMinutes(time: string): number {
-  const [h, m] = time.split(":").map(Number);
-  return h! * 60 + m!;
-}
-
-export function findActiveIndex(sorted: { time: string }[], nowMinutes: number): number {
-  let active = -1;
-  for (let i = 0; i < sorted.length; i++) {
-    if (parseTimeToMinutes(sorted[i]!.time) <= nowMinutes) {
-      active = i;
-    }
-  }
-  return active;
+  return parseInt(time, 10) * 60 + parseInt(time.slice(3), 10);
 }
 
 export function getRedirectDay(now: Date = new Date()): DayId {
@@ -44,8 +33,9 @@ export function getRedirectDay(now: Date = new Date()): DayId {
 }
 
 export function formatTime12h(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const period = h! >= 12 ? "PM" : "AM";
-  const hour = h! % 12 || 12;
+  const h = parseInt(time, 10);
+  const m = parseInt(time.slice(3), 10);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
   return `${hour}:${String(m).padStart(2, "0")} ${period}`;
 }

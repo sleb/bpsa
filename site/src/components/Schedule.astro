@@ -13,11 +13,11 @@ const { days } = Astro.props
   <header class="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
     <div class="mx-auto max-w-lg px-4 py-3">
       <h1 class="text-lg font-semibold">BP Youth Summer Adventure 2026</h1>
-      <nav class="mt-2 flex gap-1 overflow-x-auto">
+      <nav class="mt-2 grid grid-cols-3 gap-1">
         {days.map((d) => (
           <button
             data-day-tab={d.date}
-            class="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted"
+            class="truncate rounded-md px-3 py-1.5 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted"
           >
             {d.title}
           </button>

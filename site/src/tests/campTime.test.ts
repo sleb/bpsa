@@ -1,6 +1,7 @@
 import { test, expect, describe } from "bun:test";
 import {
   getTodayCampDay,
+  getRedirectDay,
   parseTimeToMinutes,
   formatTime12h,
   getCurrentTimeMinutes,
@@ -68,6 +69,20 @@ describe("formatTime12h", () => {
 
   test("00:00 → 12:00 AM", () => {
     expect(formatTime12h("00:00")).toBe("12:00 AM");
+  });
+});
+
+describe("getRedirectDay", () => {
+  test("returns the camp day on a camp day", () => {
+    expect(getRedirectDay(jun19PT)).toBe("2026-06-19");
+  });
+
+  test("falls back to June 18 before camp", () => {
+    expect(getRedirectDay(jun17PT)).toBe("2026-06-18");
+  });
+
+  test("falls back to June 18 after camp", () => {
+    expect(getRedirectDay(jun21PT)).toBe("2026-06-18");
   });
 });
 

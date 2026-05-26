@@ -4,80 +4,71 @@ Camp: June 18–20, 2026 | Potholes State Park, WA
 
 Target: site is live and editor-ready by June 14, 2026 (4 days before camp opens).
 
-**Stack:** Firebase — Firestore for data storage, Firebase Hosting for delivery.
+**Stack:** Astro (SSG) + Sanity CMS + Vercel.
 
-**Hard constraint:** Mobile-first across all UI. Design and test at 375px before any desktop work. Non-negotiable.
-
----
-
-## Phase 1 — Foundation: Admin can provision editors, editors can manage the schedule, participants can see it
-
-**Goal:** A participant opening the URL on their phone can see the current day's schedule. A camp leader can log in (using an admin-provisioned account), edit, and publish changes.
-
-**Stories included:**
-
-- STORY-07: Provision Editor Accounts
-- STORY-03: Editor Authentication
-- STORY-04: Edit the Daily Schedule
-- STORY-05: Publish Schedule Changes
-- STORY-01: View Today's Schedule
-- STORY-02: View the Full 3-Day Schedule
-
-**Delivery order:**
-
-1. STORY-07 must ship first — no editor account means STORY-03 cannot be tested end-to-end.
-2. STORY-03 must follow before STORY-04 or STORY-05 can be validated.
-3. STORY-01 and STORY-02 (read-only views) can be built in parallel with editor work, but require at least one published schedule to be meaningful — coordinate with STORY-05.
-
-**Resolved decisions:**
-
-- Editor accounts are provisioned by an admin role (STORY-07). No self-service sign-up in v1.
-- Firebase (Firestore + Firebase Hosting) is the confirmed stack. Publish SLA is 5 minutes — well within Firebase Hosting's propagation window.
-- Mobile-first is a hard constraint on all UI stories (01, 02, 03, 04, 05, 07).
+**Hard constraint:** Mobile-first across all participant-facing UI. Design and test at 375px before any desktop work. Non-negotiable.
 
 ---
 
-## Phase 2 — Operational safety: Editors can recover from mistakes
+## Phase 1 — Foundation ✓ Complete
 
-**Goal:** A camp leader who publishes a bad update can restore a prior version without calling anyone for help.
+**Goal:** Participants can view the schedule. Editors can manage content via Sanity Studio.
 
-**Stories included:**
+**Completed:**
+- Sanity schema (`scheduleDay`) deployed and all 3 days seeded with content
+- Astro SSG — builds 4 static pages (`/` redirect + 3 schedule days) from Sanity at build time
+- `ScheduleDay.astro` with vanilla JS NowIndicator (Pacific Time, 1-minute tick), tab nav, and entry highlighting — no React
+- Monorepo restructured: `site/` and `studio/` are siblings; root `package.json` has convenience scripts
+- Firebase fully removed
 
-- STORY-06: Revert to a Previous Version
-
-**Why this is Phase 2, not MVP:** Revert is a safety net, not a launch blocker. You cannot revert if you have never published — Phase 1 must ship first and accumulate at least a few versions before this feature is meaningful. Build it before camp opens, not before the site goes live.
-
-**Target:** Complete before June 18 (camp day 1). Hard deadline — if revert is not ready, editors have no recovery path during camp.
-
-**Resolved decisions:**
-
-- Firestore snapshots will store published versions. 20 versions per day is the retention target — trivial at Firestore's free tier for this scale.
-- STORY-06 depends on STORY-05 being live and stable. Do not start STORY-06 UI work until the publish flow is confirmed working.
+**Remaining (STORY-01):** "Not a camp day" message not yet shown — index falls back to Day 1 silently. Low priority.
 
 ---
 
-## Phase 3 — Post-camp / future consideration (not committed)
+## Phase 2 — Deployment: Vercel CI/CD
+
+**Goal:** Pushes to `main` automatically build and deploy to Vercel.
+
+**Tasks:**
+1. Connect repo to Vercel and confirm first manual deploy works
+2. Update `.github/workflows/firebase-hosting-merge.yml` → Vercel deploy on push to `main`
+3. Update `.github/workflows/firebase-hosting-pull-request.yml` → Vercel preview deploy on PRs (or delete if not needed)
+4. Set `SANITY_PROJECT_ID` / `SANITY_DATASET` env vars in Vercel dashboard (currently baked into `src/lib/sanity.ts` — move to env vars if needed)
+
+**Target:** Complete before June 14.
+
+---
+
+## Phase 3 — Pre-camp Polish (optional, before June 18)
+
+| Item | Notes |
+| ---- | ----- |
+| "Not a camp day" landing message | STORY-01 remaining criterion; show a message before June 18 and after June 20 instead of silently falling back to Day 1 |
+| Verify mobile layout at 375px | Manual QA pass on a real device |
+| Confirm NowIndicator accuracy | Test on Pacific Time device or emulate PT timezone |
+
+---
+
+## Phase 4 — Post-camp / future consideration (not committed)
 
 Revisit after the June 2026 camp as a retrospective input.
 
-| Item                               | Why deferred                                                                                 |
-| ---------------------------------- | -------------------------------------------------------------------------------------------- |
-| Password reset via email           | No self-service signup in v1; manual provisioning is acceptable at this scale                |
-| Push notifications to participants | No validated demand; adds significant complexity                                             |
-| Weather widget                     | Nice-to-have; Potholes State Park is remote and cell service may limit real-time data anyway |
-| Multi-camp / multi-year support    | Out of scope until a second camp is planned                                                  |
-| Participant RSVP or headcount      | Not a stated need; add only if camp ops request it                                           |
+| Item | Why deferred |
+|------|-------------|
+| Push notifications to participants | No validated demand; adds significant complexity |
+| Weather widget | Nice-to-have; cell service at Potholes State Park may be limited |
+| Multi-camp / multi-year support | Out of scope until a second camp is planned |
+| Participant RSVP or headcount | Not a stated need |
 
 ---
 
-## Open Questions
+## Architecture decisions
 
-All questions resolved as of 2026-05-18.
-
-| #   | Question                                    | Blocks                       | Status                                                     |
-| --- | ------------------------------------------- | ---------------------------- | ---------------------------------------------------------- |
-| 1   | Who provisions editor accounts, and how?    | STORY-03                     | RESOLVED: Admin role via STORY-07; no self-service sign-up |
-| 2   | Camp dates / day count                      | STORY-01, STORY-02           | RESOLVED: June 18–20, 2026 at Potholes State Park, WA      |
-| 3   | Can the hosting stack meet the publish SLA? | STORY-05                     | RESOLVED: Firebase Hosting; SLA relaxed to 5 minutes       |
-| 4   | Version history retention limit             | STORY-06                     | RESOLVED: 20 versions per day; stored in Firestore         |
-| 5   | Mobile-first hard constraint?               | STORY-01, STORY-02, STORY-04 | RESOLVED: Yes, non-negotiable across all UI                |
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Hosting | Vercel | Best Astro-first support; Sanity docs default |
+| CMS | Sanity | Draft/publish/revert built in; no custom editor UI needed |
+| Editor auth | Sanity project access | Eliminates custom user/role system |
+| Version history | Sanity built-in | Replaces custom Firestore versions collection |
+| Offline support | Deferred | Standard CDN/HTTP caching is sufficient for a 3-day camp |
+| Static vs. server | Static (SSG) | Schedule content changes infrequently; no server runtime needed |

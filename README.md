@@ -1,21 +1,28 @@
-# bun-react-tailwind-shadcn-template
+# BP Youth Summer Adventure 2026
 
-To install dependencies:
+Mobile-first schedule site for a 3-day youth camp at Potholes State Park, WA (June 18–20, 2026). Participants view the daily schedule; content is managed via Sanity CMS.
 
-```bash
-bun install
-```
+## Stack
 
-To start a development server:
+- **Astro** — static site generation, zero client-side JS framework
+- **Sanity** — content management (`studio/`)
+- **Tailwind v4**
 
-```bash
-bun dev
-```
+## Development
 
-To run for production:
+From the repo root:
 
 ```bash
-bun start
+bun dev          # Astro dev server at http://localhost:4321
+bun run build    # production build → site/dist/
+bun run preview  # preview production build
+bun studio       # Sanity Studio at http://localhost:3333
 ```
 
-This project was created using `bun init` in bun v1.3.13. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Content
+
+Schedule content lives in Sanity Studio. Visit the deployed Studio at [bpsa26.sanity.studio](https://bpsa26.sanity.studio).
+
+## Deployment
+
+Push to `main` deploys to Vercel automatically via GitHub Actions.

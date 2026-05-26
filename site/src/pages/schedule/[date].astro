@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro'
-import ScheduleDay from '@/components/ScheduleDay'
+import ScheduleDay from '@/components/ScheduleDay.astro'
 import { getAllScheduleDays } from '@/lib/sanity'
 import type { SanityScheduleDay } from '@/lib/sanity'
 
@@ -20,5 +20,5 @@ const { day, days } = Astro.props
 ---
 
 <Layout title={`${day.title} — BP Youth Summer Adventure 2026`}>
-  <ScheduleDay days={days} currentDate={day.date} client:load />
+  <ScheduleDay days={days} currentDate={day.date} />
 </Layout>

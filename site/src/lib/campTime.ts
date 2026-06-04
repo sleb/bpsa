@@ -10,27 +10,9 @@ function toISODate(date: Date): string {
   }).format(date);
 }
 
-export function getTodayCampDay(now: Date = new Date()): DayId | null {
+function getTodayCampDay(now: Date): DayId | null {
   const today = toISODate(now);
   return DAY_IDS.find((d) => d === today) ?? null;
-}
-
-export function getCurrentTimeMinutes(now: Date = new Date()): number {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: TZ,
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  }).formatToParts(now);
-  // biome-ignore lint/style/noNonNullAssertion: Intl.formatToParts always includes hour and minute
-  const h = parseInt(parts.find((p) => p.type === "hour")!.value, 10);
-  // biome-ignore lint/style/noNonNullAssertion: Intl.formatToParts always includes hour and minute
-  const m = parseInt(parts.find((p) => p.type === "minute")!.value, 10);
-  return h * 60 + m;
-}
-
-export function parseTimeToMinutes(time: string): number {
-  return parseInt(time, 10) * 60 + parseInt(time.slice(3), 10);
 }
 
 export function getRedirectDay(now: Date = new Date()): DayId {

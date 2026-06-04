@@ -73,9 +73,9 @@ Astro generates a fully static site at build time. All schedule data is fetched 
 - Schema: `studio/schemaTypes/scheduleDay.ts` — `scheduleDay` document type with `date`, `title`, and `entries[]`
 - Editors use Sanity Studio directly for draft/publish/revert workflows — no custom editor UI needed
 
-### NowIndicator
+### Tab navigation
 
-`Schedule.astro` renders all three days as static HTML at build time. A vanilla `<script>` block runs on the client: on load it calls `getRedirectDay()` to show the correct day and activate the right tab; tab clicks switch days in-place without navigation. The NowIndicator highlights the current activity by reading Pacific Time, finding the last entry whose time ≤ now, and adding/removing Tailwind classes. Ticks every 60 seconds.
+`Schedule.astro` renders all three days as static HTML at build time. A vanilla `<script>` block runs on the client: on load it calls `getRedirectDay()` to show the correct day and activate the right tab; tab clicks switch days in-place without navigation.
 
 ### Path aliases
 
@@ -89,9 +89,7 @@ Astro generates a fully static site at build time. All schedule data is fetched 
 
 `src/lib/campTime.ts` handles all time logic:
 
-- `getTodayCampDay()` — returns the current camp day date string or `null` if not a camp day
-- `getCurrentTimeMinutes()` — current time in minutes since midnight, Pacific Time
-- `findActiveIndex()` — finds the last entry whose time ≤ now
+- `getRedirectDay()` — returns today's camp day date string, or the first day if not during camp
 - `formatTime12h()` — formats `"HH:MM"` for display
 
 All comparisons use `Intl.DateTimeFormat` with `America/Los_Angeles`. Never use the device's local timezone.

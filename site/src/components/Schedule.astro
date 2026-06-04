@@ -32,44 +32,10 @@ const { days } = Astro.props;
 </div>
 
 <script>
-  import {
-    getCurrentTimeMinutes,
-    getRedirectDay,
-    getTodayCampDay,
-    parseTimeToMinutes,
-  } from "@/lib/campTime";
+  import { getRedirectDay } from "@/lib/campTime";
 
   const ACTIVE_TAB = ["bg-primary", "text-primary-foreground"];
   const INACTIVE_TAB = ["text-muted-foreground", "hover:bg-muted"];
-
-  function updateNowIndicator(date: string): void {
-    const list = document.querySelector<HTMLElement>(
-      `[data-day-content="${date}"]`,
-    );
-    if (!list) return;
-    const rows = list.querySelectorAll<HTMLElement>("li[data-time]");
-
-    for (const row of rows) {
-      row.classList.remove("bg-primary/10", "ring-1", "ring-primary");
-      row.classList.add("hover:bg-muted/50");
-      row.querySelector(".entry-dot")?.classList.add("invisible");
-    }
-
-    if (date !== getTodayCampDay()) return;
-
-    const now = getCurrentTimeMinutes();
-    let activeRow: HTMLElement | null = null;
-    for (const row of rows) {
-      // biome-ignore lint/style/noNonNullAssertion: li[data-time] selector guarantees data-time is present
-      if (parseTimeToMinutes(row.dataset.time!) <= now) activeRow = row;
-    }
-
-    if (activeRow) {
-      activeRow.classList.add("bg-primary/10", "ring-1", "ring-primary");
-      activeRow.classList.remove("hover:bg-muted/50");
-      activeRow.querySelector(".entry-dot")?.classList.remove("invisible");
-    }
-  }
 
   function showDay(date: string): void {
     document.querySelectorAll<HTMLElement>("[data-day-content]").forEach((el) => {
@@ -93,8 +59,6 @@ const { days } = Astro.props;
       tab.classList.add(...ACTIVE_TAB);
       tab.classList.remove(...INACTIVE_TAB);
     }
-
-    updateNowIndicator(date);
   }
 
   document
@@ -105,11 +69,4 @@ const { days } = Astro.props;
     });
 
   showDay(getRedirectDay());
-
-  setInterval(() => {
-    const visible = document.querySelector<HTMLElement>(
-      "[data-day-content]:not([hidden])",
-    );
-    if (visible?.dataset.dayContent) updateNowIndicator(visible.dataset.dayContent);
-  }, 60_000);
 </script>

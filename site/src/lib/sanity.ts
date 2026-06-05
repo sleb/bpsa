@@ -41,3 +41,27 @@ export async function getScheduleDay(
     { date },
   );
 }
+
+export interface SanityCrewMember {
+  _key: string;
+  name: string;
+  role: "youth" | "adult";
+}
+
+export interface SanityMealCrew {
+  _id: string;
+  label: string;
+  date: string;
+  time: string;
+  sortOrder: number;
+  members: SanityCrewMember[];
+}
+
+export async function getAllMealCrews(): Promise<SanityMealCrew[]> {
+  return sanityClient.fetch(
+    `*[_type == "mealCrew"] | order(sortOrder asc) {
+      _id, label, date, time, sortOrder,
+      members[] { _key, name, role }
+    }`,
+  );
+}

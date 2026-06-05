@@ -1,0 +1,11 @@
+---
+import MealCrews from "@/components/MealCrews.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllMealCrews } from "@/lib/sanity";
+
+const crews = await getAllMealCrews();
+---
+
+<Layout title="Meal Crews — BP Youth Summer Adventure 2026" activePage="crews">
+  <MealCrews crews={crews} />
+</Layout>

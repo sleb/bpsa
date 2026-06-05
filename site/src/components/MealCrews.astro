@@ -1,0 +1,40 @@
+---
+import CrewMemberRow from "@/components/CrewMemberRow.astro";
+import EntryCard from "@/components/EntryCard.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import { DAY_TABS, formatTime12h } from "@/lib/campTime";
+import type { SanityMealCrew } from "@/lib/sanity";
+
+interface Props {
+  crews: SanityMealCrew[];
+}
+
+const { crews } = Astro.props;
+
+const crewsByDate: Record<string, SanityMealCrew[]> = Object.fromEntries(
+  DAY_TABS.map(({ date }) => [date, crews.filter((c) => c.date === date)]),
+);
+---
+
+<div class="min-h-screen bg-background text-foreground">
+  <PageHeader />
+
+  <main class="mx-auto max-w-lg px-4 py-4">
+    {DAY_TABS.map(({ date }) => (
+      <div data-day-content={date} hidden>
+        {crewsByDate[date].map((crew) => (
+          <EntryCard time={formatTime12h(crew.time)} title={crew.label}>
+            <div class="mt-0.5">
+              {crew.members.filter((m) => m.role === "youth").map((m) => (
+                <CrewMemberRow member={m} />
+              ))}
+              {crew.members.filter((m) => m.role === "adult").map((m) => (
+                <CrewMemberRow member={m} />
+              ))}
+            </div>
+          </EntryCard>
+        ))}
+      </div>
+    ))}
+  </main>
+</div>

@@ -1,4 +1,5 @@
 ---
+import EntryCard from "@/components/EntryCard.astro";
 import { formatTime12h } from "@/lib/campTime";
 import type { SanityEntry } from "@/lib/sanity";
 
@@ -9,16 +10,8 @@ interface Props {
 const { entry } = Astro.props;
 ---
 
-<li class="flex gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/50">
-  <div class="min-w-0">
-    <div class="flex items-baseline gap-2">
-      <span class="shrink-0 text-sm font-mono text-muted-foreground">
-        {formatTime12h(entry.time)}
-      </span>
-      <span class="font-medium">{entry.activity}</span>
-    </div>
-    {entry.location && (
-      <p class="mt-0.5 text-sm text-muted-foreground">{entry.location}</p>
-    )}
-  </div>
-</li>
+<EntryCard time={formatTime12h(entry.time)} title={entry.activity}>
+  {entry.location && (
+    <p class="mt-0.5 text-sm text-muted-foreground">{entry.location}</p>
+  )}
+</EntryCard>

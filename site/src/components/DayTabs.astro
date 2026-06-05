@@ -1,0 +1,46 @@
+---
+import { DAY_TABS } from "@/lib/campTime";
+---
+
+<nav class="mt-2 grid grid-cols-3 gap-1">
+  {DAY_TABS.map(({ date, label }) => (
+    <button
+      data-day-tab={date}
+      class="truncate rounded-md px-3 py-1.5 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted"
+    >
+      {label}
+    </button>
+  ))}
+</nav>
+
+<script>
+  import { getRedirectDay } from "@/lib/campTime";
+
+  const ACTIVE_TAB = ["bg-primary", "text-primary-foreground"];
+  const INACTIVE_TAB = ["text-muted-foreground", "hover:bg-muted"];
+
+  function showDay(date: string): void {
+    document.querySelectorAll<HTMLElement>("[data-day-content]").forEach((el) => {
+      el.hidden = true;
+    });
+    document.querySelectorAll<HTMLButtonElement>("[data-day-tab]").forEach((btn) => {
+      btn.classList.remove(...ACTIVE_TAB);
+      btn.classList.add(...INACTIVE_TAB);
+    });
+
+    const content = document.querySelector<HTMLElement>(`[data-day-content="${date}"]`);
+    const tab = document.querySelector<HTMLButtonElement>(`[data-day-tab="${date}"]`);
+    if (content) content.hidden = false;
+    if (tab) {
+      tab.classList.add(...ACTIVE_TAB);
+      tab.classList.remove(...INACTIVE_TAB);
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-day-tab]").forEach((btn) => {
+    // biome-ignore lint/style/noNonNullAssertion: [data-day-tab] selector guarantees the attribute is present
+    btn.addEventListener("click", () => showDay(btn.dataset.dayTab!));
+  });
+
+  showDay(getRedirectDay());
+</script>

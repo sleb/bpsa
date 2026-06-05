@@ -1,4 +1,5 @@
 ---
+import PageHeader from "@/components/PageHeader.astro";
 import ScheduleDay from "@/components/ScheduleDay.astro";
 import type { SanityScheduleDay } from "@/lib/sanity";
 
@@ -10,63 +11,9 @@ const { days } = Astro.props;
 ---
 
 <div class="min-h-screen bg-background text-foreground">
-  <header class="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-    <div class="mx-auto max-w-lg px-4 py-3">
-      <h1 class="text-lg font-semibold">BP Youth Summer Adventure 2026</h1>
-      <nav class="mt-2 grid grid-cols-3 gap-1">
-        {days.map((d) => (
-          <button
-            data-day-tab={d.date}
-            class="truncate rounded-md px-3 py-1.5 text-sm font-medium transition-colors text-muted-foreground hover:bg-muted"
-          >
-            {d.title}
-          </button>
-        ))}
-      </nav>
-    </div>
-  </header>
+  <PageHeader />
 
   <main class="mx-auto max-w-lg px-4 py-4">
     {days.map((d) => <ScheduleDay day={d} />)}
   </main>
 </div>
-
-<script>
-  import { getRedirectDay } from "@/lib/campTime";
-
-  const ACTIVE_TAB = ["bg-primary", "text-primary-foreground"];
-  const INACTIVE_TAB = ["text-muted-foreground", "hover:bg-muted"];
-
-  function showDay(date: string): void {
-    document.querySelectorAll<HTMLElement>("[data-day-content]").forEach((el) => {
-      el.hidden = true;
-    });
-    document
-      .querySelectorAll<HTMLButtonElement>("[data-day-tab]")
-      .forEach((btn) => {
-        btn.classList.remove(...ACTIVE_TAB);
-        btn.classList.add(...INACTIVE_TAB);
-      });
-
-    const content = document.querySelector<HTMLElement>(
-      `[data-day-content="${date}"]`,
-    );
-    const tab = document.querySelector<HTMLButtonElement>(
-      `[data-day-tab="${date}"]`,
-    );
-    if (content) content.hidden = false;
-    if (tab) {
-      tab.classList.add(...ACTIVE_TAB);
-      tab.classList.remove(...INACTIVE_TAB);
-    }
-  }
-
-  document
-    .querySelectorAll<HTMLButtonElement>("[data-day-tab]")
-    .forEach((btn) => {
-      // biome-ignore lint/style/noNonNullAssertion: [data-day-tab] selector guarantees the attribute is present
-      btn.addEventListener("click", () => showDay(btn.dataset.dayTab!));
-    });
-
-  showDay(getRedirectDay());
-</script>

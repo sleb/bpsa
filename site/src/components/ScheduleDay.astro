@@ -9,6 +9,6 @@ interface Props {
 const { day } = Astro.props;
 ---
 
-<ul data-day-content={day.date} class="space-y-1" hidden>
+<div data-day-content={day.date} class="space-y-1" hidden>
   {(day.entries ?? []).map((entry) => <ScheduleEntry entry={entry} />)}
-</ul>
+</div>

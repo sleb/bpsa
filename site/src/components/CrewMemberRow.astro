@@ -1,0 +1,13 @@
+---
+import type { SanityCrewMember } from "@/lib/sanity";
+
+interface Props {
+  member: SanityCrewMember;
+}
+
+const { member } = Astro.props;
+---
+
+<p class:list={["text-sm text-muted-foreground", member.role === "adult" && "mt-1.5 border-t pt-1.5"]}>
+  {member.name}{member.role === "adult" && " (supervisor)"}
+</p>

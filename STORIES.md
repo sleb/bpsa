@@ -84,3 +84,46 @@ Authenticated via Sanity. Updates the schedule before and during camp using Sani
 ### STORY-07: Provision Editor Accounts
 
 **Status:** Done via Sanity project management — the project owner invites editors in the Sanity dashboard. No provisioning scripts needed.
+
+---
+
+## Persona: Meal Crew Member (Youth or Adult)
+
+A participant who has been assigned to a meal crew. Needs to quickly find out which meal they're on, when it is, and who else is on their crew. Likely checking on their phone the morning of.
+
+---
+
+### STORY-09: App Navigation
+
+**Story:** As a participant, I want to move between the schedule and meal crews pages so that I can find what I need without hunting for a link.
+
+**Acceptance Criteria:**
+- [ ] A bottom nav bar is visible on all pages with two destinations: "Schedule" and "Crews"
+- [ ] The active page's tab is visually distinct
+- [ ] Nav is fixed to the bottom of the viewport and thumb-reachable on mobile
+- [ ] Works at 375px without horizontal scrolling or overflow
+
+**Status:** Not started.
+
+**Size:** S
+
+---
+
+### STORY-08: View Meal Crew Assignments
+
+**Story:** As a youth or adult participant, I want to see the meal crew schedule so that I know which meal I'm assigned to, when to show up, and who I'm working with.
+
+**Acceptance Criteria:**
+- [ ] A "Crews" page (e.g. `/crews`) lists all six meal assignments in chronological order
+- [ ] Each meal shows: meal label (e.g. "Thursday Dinner"), date, list of assigned youth, and the adult supervisor
+- [ ] Layout is readable at 375px — names are legible without horizontal scrolling
+- [ ] No login is required
+- [ ] Content is managed in Sanity Studio (editors can update names without a code change)
+
+**Data model:**
+- New `mealCrew` document type in Sanity with fields: `meal` (string label), `date` (date), `entries` (array of `{ name, role: "youth" | "adult" }`)
+- Six documents, one per meal: Thu Dinner, Fri Breakfast, Fri Lunch, Fri Dinner, Sat Breakfast, Travel Lunch
+
+**Status:** Not started.
+
+**Size:** M

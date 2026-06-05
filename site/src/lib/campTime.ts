@@ -1,5 +1,11 @@
 const TZ = "America/Los_Angeles";
 
+export const DAY_TABS = [
+  { date: "2026-06-18", label: "Thursday" },
+  { date: "2026-06-19", label: "Friday" },
+  { date: "2026-06-20", label: "Saturday" },
+] as const;
+
 const DAY_IDS = ["2026-06-18", "2026-06-19", "2026-06-20"] as const;
 type DayId = (typeof DAY_IDS)[number];
 

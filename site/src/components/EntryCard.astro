@@ -1,0 +1,16 @@
+---
+interface Props {
+  time: string;
+  title: string;
+}
+
+const { time, title } = Astro.props;
+---
+
+<div class="rounded-lg px-3 py-3 transition-colors hover:bg-muted/50">
+  <div class="flex items-baseline gap-2">
+    <span class="shrink-0 font-mono text-sm text-muted-foreground">{time}</span>
+    <span class="font-medium">{title}</span>
+  </div>
+  <slot />
+</div>

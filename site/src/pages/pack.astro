@@ -1,0 +1,11 @@
+---
+import PackList from "@/components/PackList.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getPackList } from "@/lib/sanity";
+
+const packList = await getPackList();
+---
+
+<Layout title="Pack List — BP Youth Summer Adventure 2026" activePage="pack">
+  <PackList packList={packList} />
+</Layout>

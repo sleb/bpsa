@@ -1,10 +1,16 @@
 ---
 import DayTabs from "@/components/DayTabs.astro";
+
+interface Props {
+  showTabs?: boolean;
+}
+
+const { showTabs = true } = Astro.props;
 ---
 
 <header class="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
   <div class="mx-auto max-w-lg px-4 py-3">
     <h1 class="text-lg font-semibold">BP Youth Summer Adventure 2026</h1>
-    <DayTabs />
+    {showTabs && <DayTabs />}
   </div>
 </header>

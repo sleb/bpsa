@@ -1,0 +1,86 @@
+---
+import PageHeader from "@/components/PageHeader.astro";
+import type { SanityPackList } from "@/lib/sanity";
+
+interface Props {
+  packList: SanityPackList | null;
+}
+
+const { packList } = Astro.props;
+---
+
+<div class="min-h-screen bg-background text-foreground">
+  <PageHeader showTabs={false} />
+
+  <main class="mx-auto max-w-lg px-4 py-4 space-y-6">
+    {(packList?.categories ?? []).map((category) => (
+      <section>
+        <h2 class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground px-3">
+          {category.title}
+        </h2>
+        <div class="space-y-0.5">
+          {category.items.map((item) => (
+            <label
+              data-pack-item
+              class="flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
+            >
+              <input
+                type="checkbox"
+                data-item-key={`${category._key}:${item._key}`}
+                class="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+              />
+              <span class="flex-1">
+                <span data-item-name class="font-medium">{item.name}</span>
+                {item.note && (
+                  <span class="ml-1.5 text-sm text-muted-foreground">{item.note}</span>
+                )}
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</div>
+
+<script>
+  const STORAGE_KEY = "bpsa-pack-checked";
+
+  function loadChecked(): Set<string> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveChecked(checked: Set<string>): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
+  }
+
+  const checked = loadChecked();
+
+  document.querySelectorAll<HTMLInputElement>("[data-item-key]").forEach((input) => {
+    const key = input.dataset.itemKey!;
+    input.checked = checked.has(key);
+    applyStyle(input);
+
+    input.addEventListener("change", () => {
+      if (input.checked) {
+        checked.add(key);
+      } else {
+        checked.delete(key);
+      }
+      saveChecked(checked);
+      applyStyle(input);
+    });
+  });
+
+  function applyStyle(input: HTMLInputElement): void {
+    const nameEl = input.closest("label")?.querySelector("[data-item-name]");
+    if (!nameEl) return;
+    nameEl.classList.toggle("line-through", input.checked);
+    nameEl.classList.toggle("text-muted-foreground", input.checked);
+  }
+</script>

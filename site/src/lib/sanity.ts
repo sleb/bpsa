@@ -65,3 +65,27 @@ export async function getAllMealCrews(): Promise<SanityMealCrew[]> {
     }`,
   );
 }
+
+export interface SanityPackItem {
+  _key: string;
+  name: string;
+  note?: string;
+}
+
+export interface SanityPackCategory {
+  _key: string;
+  title: string;
+  items: SanityPackItem[];
+}
+
+export interface SanityPackList {
+  categories: SanityPackCategory[];
+}
+
+export async function getPackList(): Promise<SanityPackList | null> {
+  return sanityClient.fetch(
+    `*[_type == "packList"][0] {
+      categories[] { _key, title, items[] { _key, name, note } }
+    }`,
+  );
+}

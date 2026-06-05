@@ -1,13 +1,13 @@
 ---
 interface Props {
-  activePage: "schedule" | "crews";
+  activePage: "schedule" | "crews" | "pack";
 }
 
 const { activePage } = Astro.props;
 ---
 
 <nav class="fixed bottom-0 left-0 right-0 z-20 border-t bg-background/95 backdrop-blur">
-  <div class="mx-auto grid max-w-lg grid-cols-2">
+  <div class="mx-auto grid max-w-lg grid-cols-3">
     <a
       href="/"
       class:list={[
@@ -41,6 +41,22 @@ const { activePage } = Astro.props;
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
       Crews
+    </a>
+    <a
+      href="/pack"
+      class:list={[
+        "flex flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors",
+        activePage === "pack"
+          ? "text-primary"
+          : "text-muted-foreground hover:text-foreground",
+      ]}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      Pack
     </a>
   </div>
 </nav>
